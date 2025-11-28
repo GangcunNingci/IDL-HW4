@@ -123,9 +123,9 @@ class ASRTrainer(BaseTrainer):
                 if self.ctc_weight > 0:
                     print(ctc_inputs)
                     ctc_loss = self.ctc_criterion(
-                        F.log_softmax(ctc_inputs["logits"], dim=-1).transpose(0, 1),
+                        ctc_inputs["log_probs"],
                         targets_golden[targets_golden != self.tokenizer.pad_id],
-                        feat_lengths // self.config["model"]["time_reduction"],
+                        ctc_inputs["lengths"],
                         transcript_lengths,
                     )
                     loss = ce_loss + self.ctc_weight * ctc_loss
