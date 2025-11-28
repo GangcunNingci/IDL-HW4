@@ -96,7 +96,7 @@ class ASRTrainer(BaseTrainer):
         running_joint_loss = 0.0
         total_tokens = 0
         running_att = None  # Initialize running_att here
-
+        print("Harro")
         # Only zero gradients when starting a new accumulation cycle
         self.optimizer.zero_grad()
 
