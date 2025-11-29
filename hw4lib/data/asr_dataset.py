@@ -91,7 +91,7 @@ class ASRDataset(Dataset):
         self.fbank_dir   = os.path.join(self.config["root"], self.partition, "fbank")
         
         # TODO: Get all feature files in the feature directory in sorted order  
-        self.fbank_files = sorted([f for f in os.listdir(self.fbank_dir) if f.endswith(".npy")])
+        self.fbank_files = sorted([file_name for file_name in os.listdir(self.fbank_dir) if file_name.endswith(".npy")])
         
         # TODO: Take subset
         subset_size      = int(len(self.fbank_files) * float(self.config["subset"]))
@@ -107,7 +107,7 @@ class ASRDataset(Dataset):
             self.text_dir   = os.path.join(self.config["root"], self.partition, "text")
 
             # TODO: Get all text files in the text directory in sorted order  
-            self.text_files = sorted([f for f in os.listdir(self.text_dir) if f.endswith(".npy")])
+            self.text_files = sorted([file_name for file_name in os.listdir(self.text_dir) if file_name.endswith(".npy")])
             
             # TODO: Take subset
             self.text_files = self.text_files[:subset_size]
@@ -291,7 +291,7 @@ class ASRDataset(Dataset):
 
         # TODO: Collect feature lengths from the batch into a tensor
         # Note: Use list comprehension to collect the feature lengths from the batch   
-        feat_lengths = torch.LongTensor([feat.size(0) for feat in batch_feats]) # B
+        feat_lengths = torch.LongTensor([feature.size(0) for feature in batch_feats]) # B
 
         # TODO: Pad features to create a batch of fixed-length padded features
         # Note: Use torch.nn.utils.rnn.pad_sequence to pad the features (use pad_token as the padding value)
@@ -311,7 +311,7 @@ class ASRDataset(Dataset):
 
             # TODO: Collect transcript lengths from the batch into a tensor
             # Note: Use list comprehension to collect the transcript lengths from the batch   
-            transcript_lengths = torch.LongTensor([t.size(0) for t in batch_shifted]) # B  
+            transcript_lengths = torch.LongTensor([transcript.size(0) for transcript in batch_shifted]) # B  
 
             # TODO: Pad transcripts to create a batch of fixed-length padded transcripts
             # Note: Use torch.nn.utils.rnn.pad_sequence to pad the transcripts (use pad_token as the padding value)

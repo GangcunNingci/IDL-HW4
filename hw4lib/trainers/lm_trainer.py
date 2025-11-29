@@ -96,10 +96,7 @@ class LMTrainer(BaseTrainer):
                 # What is the shape of raw_preds and targets_golden? 
                 # Would you need to change the shape of the inputs to the criterion?
                 # Hint: See the documentation for CrossEntropyLoss
-                raw_loss = self.criterion(
-                    raw_preds.reshape(-1, raw_preds.size(-1)),
-                    targets_golden.reshape(-1)
-                )
+                raw_loss = self.criterion(raw_preds.reshape(-1, raw_preds.size(-1)), targets_golden.reshape(-1))
                 
             # Calculate metrics with raw loss (DO NOT MODIFY THIS)
             batch_tokens = lengths.sum().item()
@@ -194,10 +191,7 @@ class LMTrainer(BaseTrainer):
                 # What is the shape of raw_preds and targets_golden? 
                 # Would you need to change the shape of the inputs to the criterion?
                 # Hint: See the documentation for CrossEntropyLoss
-                loss = self.criterion(
-                    raw_preds.reshape(-1, raw_preds.size(-1)),
-                    targets_golden.reshape(-1)
-                )
+                loss = self.criterion(raw_preds.reshape(-1, raw_preds.size(-1)), targets_golden.reshape(-1))
 
             # Calculate metrics
             batch_tokens = lengths.sum().item()
@@ -393,17 +387,17 @@ class LMTrainer(BaseTrainer):
                 print("Generating with sampling...")
                 seqs, scores = generator.generate_sample(
                     prompts,
-                    temperature=generation_config.get('temperature', 1.0),
-                    top_k=generation_config.get('top_k', 0),
-                    top_p=generation_config.get('top_p', 1.0),
+                    temperature=generation_config['temperature'],
+                    top_k=generation_config['top_k'],
+                    top_p=generation_config['top_p'],
                 )
             elif generation_config.get('beam_width', 1) > 1:
                 print("Generating with beam search...")
                 seqs, scores = generator.generate_beam(
                     prompts,
-                    beam_width=generation_config.get('beam_width', 1),
-                    temperature=generation_config.get('temperature', 1.0),
-                    repeat_penalty=generation_config.get('repeat_penalty', 1.0),
+                    beam_width=generation_config['beam_width'],
+                    temperature=generation_config['temperature'],
+                    repeat_penalty=generation_config['repeat_penalty'],
                 )
                 # Take best beam and score
                 seqs = seqs[:, 0]
@@ -413,8 +407,8 @@ class LMTrainer(BaseTrainer):
                 print("Generating with greedy search...")
                 seqs, scores = generator.generate_greedy(
                     prompts,
-                    temperature=generation_config.get('temperature', 1.0),
-                    repeat_penalty=generation_config.get('repeat_penalty', 1.0),
+                    temperature=generation_config['temperature'],
+                    repeat_penalty=generation_config['repeat_penalty'],
                 )
 
         # Post-process sequences (trim upto EOS token)

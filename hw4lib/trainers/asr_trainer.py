@@ -123,7 +123,7 @@ class ASRTrainer(BaseTrainer):
                 if self.ctc_weight > 0:
                     ctc_loss = self.ctc_criterion(
                         ctc_inputs["log_probs"],
-                        targets_golden[targets_golden != self.tokenizer.pad_id],
+                        targets_golden,
                         ctc_inputs["lengths"],
                         transcript_lengths,
                     )
@@ -210,16 +210,7 @@ class ASRTrainer(BaseTrainer):
         # TODO: In-fill the _validate_epoch method
 
         # TODO: Call recognize
-        self.model.eval()
-        recognition_config = {
-            'num_batches': None,
-            'temperature': 1.0,
-            'repeat_penalty': 1.0,
-            'lm_weight': 0.0,
-            'lm_model': None,
-            'beam_width': 4,
-        }
-        results = self.recognize(dataloader, recognition_config, config_name="val")
+        results = self.recognize(dataloader)
         
         # TODO: Extract references and hypotheses from results
         references = [result["target"] for result in results]
@@ -331,7 +322,7 @@ class ASRTrainer(BaseTrainer):
                 print(f"Evaluating with {config_name} config")
                 results = self.recognize(dataloader, config, config_name, max_length)     
                 # Calculate metrics on full batch
-                generated = [r['generated'] for r in results]
+                generated = [result['generated'] for result in results]
                 results_df = pd.DataFrame(
                     {
                         'id': range(len(generated)),
@@ -402,9 +393,11 @@ class ASRTrainer(BaseTrainer):
                 # TODO: Unpack batch and move to device
                 # TODO: Handle both cases where targets may or may not be None (val set v. test set) 
                 feats, _, targets_golden, feat_lengths, _ = batch
-                
+                feats = feats.to(self.device)
+                targets_golden = None if targets_golden is None else targets_golden.to(self.device)
+                feat_lengths = feat_lengths.to(self.device)
                 # TODO: Encode speech features to hidden states
-                encoder_output, pad_mask_src, _, _ = self.model.encode(feats.to(self.device), feat_lengths.to(self.device))
+                encoder_output, pad_mask_src, _, _ = self.model.encode(feats, feat_lengths)
                 
                 # Define scoring function for this batch
                 def get_score(x):

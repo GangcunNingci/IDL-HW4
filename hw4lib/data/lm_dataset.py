@@ -65,7 +65,7 @@ class LMDataset(Dataset):
         self.text_dir = os.path.join(self.config["root"], self.partition)
 
         # TODO: Get all text files in the text directory in sorted order  
-        self.text_files = sorted([f for f in os.listdir(self.text_dir) if f.endswith(".npy")])
+        self.text_files = sorted([file_name for file_name in os.listdir(self.text_dir) if file_name.endswith(".npy")])
 
         # TODO: Take subset
         subset_size = int(len(self.text_files) * float(self.config["subset"]))
@@ -167,7 +167,7 @@ class LMDataset(Dataset):
         shifted_transcripts, golden_transcripts = zip(*batch)
         
         # TODO: Record the sequence lengths before padding
-        lengths = torch.LongTensor([s.size(0) for s in shifted_transcripts]) # (B)
+        lengths = torch.LongTensor([shifted_transcript.size(0) for shifted_transcript in shifted_transcripts]) # (B)
 
         # TODO: Pad sequences (use torch.nn.utils.rnn.pad_sequence and pad with pad_token)
         padded_shifted = pad_sequence(shifted_transcripts, batch_first=True, padding_value=self.pad_token) # (B, T)
